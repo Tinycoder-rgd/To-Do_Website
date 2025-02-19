@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="dropdown">
+                <button class="dropbtn">=</button>
+                <div class="dropdown-content">
+                </div>
+            <h1>Website todo</h1>
+        </header>
+
+        <div class="menu">
+            <ul id="task-list">
+                <!-- Tasks will be dynamically rendered here -->
+            </ul>
+        </div>
+        
+        <a href="add-task.html" class="new-task">Add Task</a>
+    </div>
+    <script type="module" src="js/script.js"></script>
+
+    <script type="module">
+        import { renderTasks } from './js/domUtils.js';
+        
+        // Initial render
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTasks();
+        });
+
+        // Listen for storage changes
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'tasks') {
+                renderTasks();
+            }
+        });
+
+        // Listen for page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                renderTasks();
+            }
+        });
+    </script>
+</body>
+
+</html>
