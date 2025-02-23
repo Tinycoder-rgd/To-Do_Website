@@ -1,66 +1,54 @@
-import { addTask } from './taskManager.js';
+import { addTask, editTask, getTaskById } from './taskManager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded and parsed');
+    console.log('DOM Loaded.');
 
     const taskForm = document.getElementById('task-form');
-    if (!taskForm) {
-        console.error('Task form not found');
-        return; // Ensures the script doesn't continue if the form is missing
+    const titleInput = document.getElementById('task-title');
+    const descriptionInput = document.getElementById('task-description');
+    const dueDateInput = document.getElementById('task-due-date');
+    const submitBtn = document.getElementById('submit-btn');
+
+    // Get query params (for edit mode)
+    const urlParams = new URLSearchParams(window.location.search);
+    const editTaskId = urlParams.get('edit');
+
+    if (editTaskId) {
+        console.log(`Editing task ID: ${editTaskId}`);
+        const taskToEdit = getTaskById(Number(editTaskId));
+        if (taskToEdit) {
+            titleInput.value = taskToEdit.title;
+            descriptionInput.value = taskToEdit.description;
+            dueDateInput.value = taskToEdit.dueDate;
+            submitBtn.textContent = 'Update Task';
+        }
     }
 
     taskForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Get input fields
-        const titleInput = document.getElementById('task-title');
-        const descriptionInput = document.getElementById('task-description');
-        const dueDateInput = document.getElementById('task-due-date');
-
-        // Check if inputs exist
-        if (!titleInput) {
-            console.error('Task title input not found');
-            return; // Prevents further execution if missing
-        }
-
         if (!titleInput.value.trim()) {
             showMessage('Please enter a task title', 'error');
-            return; // Stops form submission if the title is empty
-        }
-
-        // Validate due date if provided
-        if (dueDateInput && dueDateInput.value) {
-            const dueDate = new Date(dueDateInput.value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            if (dueDate < today) {
-                showMessage('Due date cannot be in the past', 'error');
-                return; // Prevents submission if the due date is invalid
-            }
+            return;
         }
 
         const newTask = {
+            id: editTaskId ? Number(editTaskId) : null,
             title: titleInput.value.trim(),
-            description: descriptionInput ? descriptionInput.value.trim() : '',
-            dueDate: dueDateInput ? dueDateInput.value : null
+            description: descriptionInput.value.trim(),
+            dueDate: dueDateInput.value || null,
+            completed: false
         };
 
-        try {
+        if (editTaskId) {
+            editTask(newTask);
+            showMessage('Task updated successfully!');
+        } else {
             addTask(newTask);
-            window.dispatchEvent(new Event('storage')); // Ensures task updates across tabs
             showMessage('Task added successfully!');
-
-            // Clear form inputs after successful addition
-            titleInput.value = '';
-            if (descriptionInput) descriptionInput.value = '';
-            if (dueDateInput) dueDateInput.value = '';
-
-        } catch (error) {
-            showMessage('Failed to add task. Please try again.', 'error');
-            console.error('Error adding task:', error);
-            return; // Ensures function exits if task addition fails
         }
+
+        window.location.href = 'index.html'; // Redirect to task list
     });
 });
 
