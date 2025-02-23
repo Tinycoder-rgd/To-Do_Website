@@ -10,11 +10,9 @@
     <div class="container">
         <header class="header">
             <div class="dropdown">
-                <button class="dropbtn">=</button>
-                <div class="dropdown-content">
-                    <a href="index.html">Show Task</a>
+                <img src="/dropdown1.png" alt="">
                 </div>
-            <h1>Add New Task</h1>
+            <h1>Add Task</h1>
         </header>
 
         <form id="task-form">
@@ -34,13 +32,13 @@
             </div>
             
             <div class="form-actions">
-                <button type="submit" class="save-btn">Save Task</button>
+                <button type="submit" class="save-btn"><a href="index.html">Save Task</a></button>
                 <a href="index.html" class="cancel-btn" onclick="window.location.reload()">Cancel</a>
 
             </div>
         </form>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js" defer></script>
 </body>
 </html>
