@@ -3,42 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="style.css" rel="stylesheet">
-    <title>New Task</title>
+    <title>Add Task</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="container">
         <header class="header">
-            <div class="dropdown">
-                <img src="/dropdown1.png" alt="">
-                </div>
+            <img src="/dropdown1.png" alt="">
             <h1>Add Task</h1>
         </header>
-
         <form id="task-form">
-            <div class="form-group">
-                <label for="task-title">Task Title:</label>
-                <input type="text" id="task-title" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="task-description">Description:</label>
-                <textarea id="task-description" rows="3"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="task-due-date">Due Date:</label>
-                <input type="date" id="task-due-date">
-            </div>
-            
-            <div class="form-actions">
-                <button type="submit" class="save-btn"><a href="index.html">Save Task</a></button>
-                <a href="index.html" class="cancel-btn" onclick="window.location.reload()">Cancel</a>
+            <label for="task-name">Task Name:</label>
+            <input type="text" id="task-name" required>
 
-            </div>
+            <label for="task-date">Due Date:</label>
+            <input type="date" id="task-date" required>
+<div class="button">
+    <button type="submit">Save Task</button>
+    <button type="submit"><a href="index.html">Back</a></button>
+        </div>
         </form>
     </div>
 
-    <script type="module" src="script.js" defer></script>
+    <script src="taskManager.js"></script>
+    <script src="domUtils.js"></script>
+    <script src="script.js"></script>
+
 </body>
 </html>

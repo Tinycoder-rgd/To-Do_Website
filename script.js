@@ -1,65 +1,51 @@
-import { addTask, editTask, getTaskById } from './taskManager.js';
-
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Loaded.');
-
-    const taskForm = document.getElementById('task-form');
-    const titleInput = document.getElementById('task-title');
-    const descriptionInput = document.getElementById('task-description');
-    const dueDateInput = document.getElementById('task-due-date');
-    const submitBtn = document.getElementById('submit-btn');
-
-    // Get query params (for edit mode)
-    const urlParams = new URLSearchParams(window.location.search);
-    const editTaskId = urlParams.get('edit');
-
-    if (editTaskId) {
-        console.log(`Editing task ID: ${editTaskId}`);
-        const taskToEdit = getTaskById(Number(editTaskId));
-        if (taskToEdit) {
-            titleInput.value = taskToEdit.title;
-            descriptionInput.value = taskToEdit.description;
-            dueDateInput.value = taskToEdit.dueDate;
-            submitBtn.textContent = 'Update Task';
-        }
+document.addEventListener('DOMContentLoaded', function () {
+    // Ensure task list renders on `index.html`
+    const taskList = document.getElementById('task-list');
+    if (taskList) {
+        DOMUtils.renderTasks();
     }
 
-    taskForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+    // Ensure task form handling only happens on `add-task.html`
+    const taskForm = document.getElementById('task-form');
+    if (taskForm) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskId = urlParams.get('id');
 
-        if (!titleInput.value.trim()) {
-            showMessage('Please enter a task title', 'error');
-            return;
+        if (taskId !== null) {
+            document.getElementById('task-name').value = urlParams.get('name') || '';
+            document.getElementById('task-date').value = urlParams.get('dueDate') || '';
         }
 
-        const newTask = {
-            id: editTaskId ? Number(editTaskId) : null,
-            title: titleInput.value.trim(),
-            description: descriptionInput.value.trim(),
-            dueDate: dueDateInput.value || null,
-            completed: false
-        };
+        taskForm.addEventListener('submit', function (event) {
+            event.preventDefault();
 
-        if (editTaskId) {
-            editTask(newTask);
-            showMessage('Task updated successfully!');
-        } else {
-            addTask(newTask);
-            showMessage('Task added successfully!');
-        }
+            const taskName = document.getElementById('task-name').value.trim();
+            const taskDate = document.getElementById('task-date').value.trim();
+            const today = new Date().toISOString().split('T')[0];
 
-        window.location.href = 'index.html'; // Redirect to task list
-    });
+            if (!taskName) {
+                alert('❌ Please enter a task name.');
+                return;
+            }
+            if (!taskDate) {
+                alert('❌ Please enter a due date.');
+                return;
+            }
+            if (taskDate < today) {
+                alert('❌ The due date must be today or later.');
+                return;
+            }
+
+            if (taskId !== null) {
+                TaskManager.updateTask(taskId, taskName, taskDate);
+            } else {
+                TaskManager.addTask(taskName, taskDate);
+            }
+
+            // Ensure storage updates before redirection
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 100);
+        });
+    }
 });
-
-// Show feedback messages
-const showMessage = (message, type = 'success') => {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${type}`;
-    messageDiv.textContent = message;
-    document.body.prepend(messageDiv);
-
-    setTimeout(() => {
-        messageDiv.remove();
-    }, 3000);
-};

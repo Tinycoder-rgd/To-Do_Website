@@ -1,78 +1,44 @@
-import { getTasks, deleteTask, toggleTaskStatus } from './taskManager.js';
+const DOMUtils = {
+    renderTasks: function () {
+        const taskList = document.getElementById('task-list');
+        if (!taskList) return;
 
-export const renderTasks = () => {
-    console.log('Rendering tasks...');
+        taskList.innerHTML = '';
 
-    const taskList = document.getElementById('task-list');
-    if (!taskList) {
-        console.error('Task list container not found.');
-        return;
-    }
+        const tasks = TaskManager.getTasks();
+        tasks.forEach((task, index) => {
+            const li = document.createElement('li');
+            li.className = "task-item";
 
-    taskList.innerHTML = ''; // Clear previous tasks
-    const tasks = getTasks();
+            li.innerHTML = `
+                <input type="checkbox" onchange="DOMUtils.toggleTask(${index})" ${task.completed ? 'checked' : ''}>
+                <span class="task-text ${task.completed ? 'completed' : ''}">${task.name} - Due: ${task.dueDate}</span>
+                <div class="task-buttons">
+                    <button onclick="DOMUtils.editTask(${index})">Edit</button>
+                    <button onclick="DOMUtils.deleteTask(${index})">Delete</button>
+                </div>
+            `;
 
-    if (!tasks.length) {
-        taskList.innerHTML = `<div class="empty-state"><p>No tasks found. Add a task!</p></div>`;
-        return;
-    }
-
-    tasks.forEach(task => {
-        const li = document.createElement('li');
-        li.classList.add('task-item');
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = task.completed;
-        checkbox.addEventListener('change', () => {
-            toggleTaskStatus(task.id);
-            renderTasks();
+            taskList.appendChild(li);
         });
+    },
 
-        const taskDetails = document.createElement('div');
-        taskDetails.className = 'task-details';
+    toggleTask: function (index) {
+        TaskManager.toggleTaskCompletion(index);
+        this.renderTasks();
+    },
 
-        const taskTitle = document.createElement('span');
-        taskTitle.textContent = task.title;
-        if (task.completed) taskTitle.classList.add('completed');
+    editTask: function (index) {
+        const tasks = TaskManager.getTasks();
+        const task = tasks[index];
 
-        if (task.description) {
-            const taskDescription = document.createElement('p');
-            taskDescription.className = 'task-description';
-            taskDescription.textContent = task.description;
-            taskDetails.appendChild(taskDescription);
+        window.location.href = `add-task.html?id=${index}&name=${encodeURIComponent(task.name)}&dueDate=${encodeURIComponent(task.dueDate)}`;
+    },
+
+    deleteTask: function (index) {
+        if (confirm('Are you sure you want to delete this task?')) {
+            TaskManager.deleteTask(index);
+            this.renderTasks();
         }
-
-        const taskDueDate = document.createElement('span');
-        if (task.dueDate) {
-            const dueDate = new Date(task.dueDate);
-            taskDueDate.textContent = `Due: ${dueDate.toLocaleDateString()}`;
-        }
-
-        const editBtn = document.createElement('button');
-        editBtn.textContent = '✏️';
-        editBtn.className = 'task-edit-btn';
-        editBtn.addEventListener('click', () => {
-            window.location.href = `add-task.html?edit=${task.id}`;
-        });
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = '🗑';
-        deleteBtn.className = 'task-delete-btn';
-        deleteBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to delete this task?')) {
-                deleteTask(task.id);
-                renderTasks();
-            }
-        });
-
-        taskDetails.appendChild(taskTitle);
-        taskDetails.appendChild(taskDueDate);
-        li.appendChild(checkbox);
-        li.appendChild(taskDetails);
-        li.appendChild(editBtn);
-        li.appendChild(deleteBtn);
-
-        taskList.appendChild(li);
-    });
+    }
 };

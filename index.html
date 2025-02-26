@@ -3,51 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
+    <title>Todo App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="container">
         <header class="header">
-            <div class="dropdown">
-                <img src="/dropdown1.png" alt="">
-                </div>
-            <h1>Website todo</h1>
-        </header>
-         <section class="content">
-        <div class="menu">
-            <ul id="task-list">
-
-            </ul>
-        </div>
-        <div class="trial">
-        <a href="add-task.html" class="new-task">+ Add Task</a></div>
+        <img src="/dropdown1.png" alt="">
+        <h1>Todo List</h1>
+    </header>
+    <div class="content">
+        <ul id="task-list"></ul>
+        <button onclick="window.location.href='add-task.html'" id="button">Add Task</button>
     </div>
-</section>
-    <script type="module" src="script.js"></script>
+    </div>
 
-    <script type="module">
-        import { renderTasks } from '/domUtils.js';
-        
-        // Initial render
-        document.addEventListener('DOMContentLoaded', () => {
-            renderTasks();
-        });
+    <script src="taskManager.js"></script>
+    <script src="domUtils.js"></script>
+    <script src="script.js"></script>
 
-        // Listen for storage changes
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'tasks') {
-                renderTasks();
-            }
-        });
-
-        // Listen for page visibility changes
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                renderTasks();
-            }
-        });
-    </script>
 </body>
-
 </html>
